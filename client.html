@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A Simple Server-Client Socket Program using JavaScript, NodeJS and Express</title>
+    
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: Arial, sans-serif; background-color: lightgray; }
+
+      h2 {text-align: center;}
+      h3 {font-size: medium; font-style: italic;}
+
+      #form { background: black; padding: 0.5rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 5rem; box-sizing: border-box; backdrop-filter: blur(20px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 1rem; margin: 0.25rem; font-size: medium; }
+      #input:focus { outline: none; }
+      #form > button { background:magenta; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 10px; outline: none; color: black; font-size: small;}
+      #form > button:hover {background-color: darkmagenta; color: white;}
+      #form > button:active {background-color: white; color:darkmagenta;}
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef5d; }
+    </style>
+  </head>
+
+  <body>
+    <h2>A simple function that takes a sentense and reverses the character orders in each word</h2>
+    <h3>Example: I Love You. >>> I evoL .uoY</h3>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      const socket = io("http://localhost:8888");                    
+
+      var messages = document.getElementById('messages');
+      var form = document.getElementById('form');
+      var input = document.getElementById('input');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+
+          let sendingMsg = document.createElement('li');
+          sendingMsg.textContent = "[" + input.value + "] sent to server" ;
+          messages.appendChild(sendingMsg);
+
+          input.value = '';
+        }
+      });
+
+      socket.on('chat message', function(msg) {
+        let returnedMsg = document.createElement('li');
+        returnedMsg.textContent = "Return From Server >>> [" + msg + "]";
+        messages.appendChild(returnedMsg);
+      });
+    </script>
+
+  </body>
+</html>
